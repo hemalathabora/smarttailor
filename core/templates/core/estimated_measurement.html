@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Estimated Measurements</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #f8fafc 60%, #e3f2fd 100%);
+      min-height: 100vh;
+    }
+    .measurement-card {
+      max-width: 500px;
+      margin: auto;
+      border-radius: 1.2rem;
+      box-shadow: 0 4px 32px rgba(25,118,210,0.10);
+      animation: fadeInUp 1s both;
+      border: none;
+      background: linear-gradient(120deg, #fff 80%, #e3f2fd 100%);
+    }
+    .measurement-img {
+      max-width: 100%;
+      border-radius: 1.2rem;
+      border: 2px solid #1976d2;
+      box-shadow: 0 4px 24px rgba(25,118,210,0.10);
+      animation: fadeInImg 1.2s 0.2s both;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .measurement-img:hover {
+      transform: scale(1.04) rotate(-2deg);
+      box-shadow: 0 8px 32px rgba(25,118,210,0.18);
+      border-color: #1565c0;
+    }
+    .list-group-item {
+      font-size: 1.1rem;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #e3e3e3;
+      transition: background 0.2s, color 0.2s;
+    }
+    .list-group-item:last-child {
+      border-bottom: none;
+    }
+    .list-group-item strong {
+      color: #1976d2;
+      letter-spacing: 0.5px;
+    }
+    .list-group-item:hover {
+      background: #e3f2fd;
+      color: #1976d2;
+      transform: scale(1.02);
+    }
+    .btn-outline-primary, .btn-success {
+      border-radius: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: box-shadow 0.3s, background 0.3s, color 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    }
+    .btn-outline-primary:hover, .btn-success:hover {
+      box-shadow: 0 8px 24px rgba(25,118,210,0.18);
+      background: #1565c0;
+      color: #fff;
+      transform: scale(1.04);
+    }
+    .alert-warning {
+      border-radius: 0.7rem;
+      font-size: 1.08rem;
+      animation: fadeInAlert 1s 0.3s both;
+    }
+    h2 {
+      font-weight: bold;
+      color: #1976d2;
+      letter-spacing: 1px;
+      animation: fadeInDown 1s both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px);}
+      to { opacity: 1; transform: none;}
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-40px);}
+      to { opacity: 1; transform: none;}
+    }
+    @keyframes fadeInImg {
+      from { opacity: 0; transform: scale(0.95);}
+      to { opacity: 1; transform: none;}
+    }
+    @keyframes fadeInAlert {
+      from { opacity: 0; transform: scale(0.95);}
+      to { opacity: 1; transform: none;}
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <div class="container py-5 text-center">
+    <h2 class="mb-4">📏 Estimated Body Measurements</h2>
+
+    {% if photo_filename %}
+      <img src="{{ MEDIA_URL }}{{ photo_filename }}" alt="Uploaded Photo" class="measurement-img mb-4">
+    {% endif %}
+
+    <div class="card shadow-sm measurement-card">
+      <div class="card-body">
+        {% if estimated %}
+          <ul class="list-group list-group-flush text-start">
+            <li class="list-group-item"><strong>Shoulder:</strong> {{ estimated.shoulder }} inches</li>
+            <li class="list-group-item"><strong>Chest:</strong> {{ estimated.chest }} inches</li>
+            <li class="list-group-item"><strong>Waist:</strong> {{ estimated.waist }} inches</li>
+            <li class="list-group-item"><strong>Hip:</strong> {{ estimated.hip }} inches</li>
+            <li class="list-group-item"><strong>Height:</strong> {{ estimated.height }} inches</li>
+          </ul>
+        {% else %}
+          <div class="alert alert-warning mt-3">
+            ❗ Measurements could not be estimated. Please try a clearer photo.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'upload_photo' %}" class="btn btn-outline-primary">🔁 Upload Another Photo</a>
+      <a href="{% url 'place_order' %}" class="btn btn-success">🧾 Use Measurements to Place Order</a>
+    </div>
+
+  </div>
+
+</body>
+</html>

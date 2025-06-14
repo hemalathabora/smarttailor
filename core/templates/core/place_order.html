@@ -1,0 +1,153 @@
+<!-- core/templates/core/place_order.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartTailor - Place Order</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f8fafc 60%, #e3f2fd 100%);
+            min-height: 100vh;
+        }
+        .order-card {
+            background: linear-gradient(120deg, #fff 80%, #e3f2fd 100%);
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 32px rgba(25,118,210,0.10);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 540px;
+            margin: 2.5rem auto;
+            animation: fadeInUp 1s both;
+            border: none;
+        }
+        h2 {
+            color: #1976d2;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s both;
+        }
+        h4 {
+            color: #1976d2;
+            font-weight: 600;
+            margin-top: 1.8rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+            animation: fadeInSection 1s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: none;}
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px);}
+            to { opacity: 1; transform: none;}
+        }
+        @keyframes fadeInSection {
+            from { opacity: 0; transform: translateX(-30px);}
+            to { opacity: 1; transform: none;}
+        }
+        .form-control, .form-select {
+            border-radius: 0.7rem;
+            box-shadow: 0 1px 4px rgba(25,118,210,0.04);
+            transition: box-shadow 0.2s, border-color 0.2s;
+            font-size: 1.05rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #1976d2;
+            box-shadow: 0 2px 8px rgba(25,118,210,0.12);
+        }
+        input, textarea, select {
+            color: #000 !important;
+            background-color: #fff !important;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #888 !important;
+        }
+        .btn-success {
+            border-radius: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: box-shadow 0.3s, background 0.3s, color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+            font-size: 1.15rem;
+            padding: 0.7rem 0;
+        }
+        .btn-success:hover {
+            box-shadow: 0 8px 24px rgba(25,118,210,0.18);
+            background: #1565c0;
+            color: #fff;
+            transform: scale(1.04);
+        }
+        label {
+            font-weight: 500;
+            color: #1976d2;
+            margin-bottom: 0.3rem;
+        }
+        .section-divider {
+            border: none;
+            border-top: 2px dashed #e3e3e3;
+            margin: 2rem 0 1.5rem 0;
+        }
+        @media (max-width: 600px) {
+            .order-card {
+                padding: 1.2rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="order-card">
+    <h2 class="mb-4 text-center">🧵 Place Your Tailoring Order</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Customer Info -->
+        <h4 class="mt-3">👤 Customer Info</h4>
+        <input name="name" class="form-control mb-2" placeholder="Name" value="{{ order.customer.name|default:'' }}" required>
+        <input name="phone" class="form-control mb-2" placeholder="Phone" value="{{ order.customer.phone|default:'' }}" required>
+        <input name="email" type="email" class="form-control mb-2" placeholder="Email" value="{{ order.customer.email|default:'' }}" required>
+        <textarea name="address" class="form-control mb-3" placeholder="Address" required>{{ order.customer.address|default:'' }}</textarea>
+
+        <hr class="section-divider">
+
+        <!-- Measurements -->
+        <h4 class="mt-3">📏 Measurements</h4>
+        <input name="shoulder" type="number" step="0.1" class="form-control mb-2" placeholder="Shoulder" value="{{ measurement.shoulder|default:'' }}" required>
+        <input name="chest" type="number" step="0.1" class="form-control mb-2" placeholder="Chest" value="{{ measurement.chest|default:'' }}" required>
+        <input name="waist" type="number" step="0.1" class="form-control mb-2" placeholder="Waist" value="{{ measurement.waist|default:'' }}" required>
+        <input name="hip" type="number" step="0.1" class="form-control mb-2" placeholder="Hip" value="{{ measurement.hip|default:'' }}" required>
+        <input name="height" type="number" step="0.1" class="form-control mb-2" placeholder="Height" value="{{ measurement.height|default:'' }}" required>
+        <textarea name="visual_notes" class="form-control mb-3" placeholder="Visual notes (optional)">{{ measurement.visual_notes|default:'' }}</textarea>
+
+        <hr class="section-divider">
+
+        <!-- Order Details -->
+        <h4 class="mt-3">📦 Order Details</h4>
+        <select name="fabric" class="form-select mb-2" required>
+            <option value="">Select Fabric</option>
+            {% for f in fabrics %}
+                <option value="{{ f.id }}" {% if order.fabric.id == f.id %}selected{% endif %}>
+                    {{ f.name }} ({{ f.quantity_in_meters }}m)
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="tailor" class="form-select mb-2" required>
+            <option value="">Select Tailor</option>
+            {% for t in tailors %}
+                <option value="{{ t.id }}" {% if order.tailor.id == t.id %}selected{% endif %}>
+                    {{ t.shop_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <textarea name="style_notes" class="form-control mb-2" placeholder="Style Notes" required>{{ order.style_notes|default:'' }}</textarea>
+        <input name="delivery_date" type="date" class="form-control mb-3" value="{{ order.delivery_date|date:'Y-m-d' }}" required>
+
+        <button type="submit" class="btn btn-success w-100">✅ Confirm Order</button>
+    </form>
+</div>
+</body>
+</html>
